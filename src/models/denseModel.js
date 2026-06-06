@@ -15,7 +15,8 @@
  */
 
 const HF_API_URL =
-  "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2";
+  "https://api-inference.huggingface.co/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2";
+
 
 /**
  * Encode query menjadi vektor embedding via Hugging Face Inference API.
