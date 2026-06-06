@@ -44,9 +44,9 @@ export default function ContactPage() {
 
           {/* Profile Card */}
           <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-6 md:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            {/* Custom Avatar Icon */}
-            <div className="h-24 w-24 rounded-full bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-center shrink-0">
-              <UserCircle size={56} className="text-[#0D9488]" weight="light" />
+            {/* Custom Avatar Image */}
+            <div className="h-24 w-24 rounded-full border border-[#E2E8F0] shadow-sm overflow-hidden shrink-0">
+              <img src="/screenshots/zekk.png" alt="Zakaria Mujur Prasetyo" className="h-full w-full object-cover" />
             </div>
 
             <div className="flex-1 space-y-4 text-center sm:text-left">
