@@ -7,7 +7,7 @@ file search index yang akan dipakai oleh frontend Next.js.
 Output:
   public/data/documents.json   — Metadata dokumen (untuk tampilan)
   public/data/bm25_index.json  — Tokenized corpus + IDF (untuk BM25)
-  public/data/embeddings.bin   — Document embeddings (untuk Dense Retrieval)
+  public/data/embeddings.dat   — Document embeddings (untuk Dense Retrieval)
 
 Cara menjalankan:
   cd website-search-engine/scripts
@@ -19,7 +19,7 @@ Proses:
   2. Transform data mentah ke format yang diperlukan
   3. Buat documents.json (kompak, hanya field untuk display)
   4. Tokenisasi semua dokumen → buat bm25_index.json
-  5. Generate embeddings → simpan embeddings.bin (opsional)
+  5. Generate embeddings → simpan embeddings.dat (opsional)
 """
 
 import json
@@ -539,7 +539,7 @@ def main():
     # ── 4. Generate embeddings (opsional) ────────────────────────────
     embeddings = build_embeddings(dataset)
     if embeddings is not None:
-        emb_path = os.path.join(OUTPUT_DIR, "embeddings.bin")
+        emb_path = os.path.join(OUTPUT_DIR, "embeddings.dat")
         save_embeddings_binary(embeddings, emb_path)
 
     # ── Selesai ──────────────────────────────────────────────────────

@@ -50,7 +50,7 @@ export async function loadEmbeddings() {
   if (_embeddingsCache) return _embeddingsCache;
 
   try {
-    const res = await fetch("/data/embeddings.bin");
+    const res = await fetch("/data/embeddings.dat");
     if (!res.ok) return null;
 
     const buffer = await res.arrayBuffer();
@@ -61,8 +61,8 @@ export async function loadEmbeddings() {
 
     _embeddingsCache = { numDocs, dim, vectors };
     return _embeddingsCache;
-  } catch {
-    console.warn("⚠️ Embeddings tidak tersedia. Dense Retrieval dinonaktifkan.");
+  } catch (err) {
+    console.warn("⚠️ Embeddings tidak tersedia. Dense Retrieval dinonaktifkan. Detail:", err);
     return null;
   }
 }
