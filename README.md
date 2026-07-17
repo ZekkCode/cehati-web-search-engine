@@ -1,142 +1,168 @@
-# 🏥 CEHATI - Cek Kesehatan dari Artikel (Medical Search Engine)
+<div align="center">
 
-CEHATI (Cek Kesehatan dari Artikel) adalah sistem temu kembali informasi (Information Retrieval) berbasis web dengan presisi tinggi yang didesain khusus untuk domain medis berbahasa Indonesia. Aplikasi ini dikembangkan sebagai pemenuhan Tugas Akhir / Ujian Akhir Semester (UAS) matakuliah **Temu Kembali Informasi**.
+# CEHATI Medical Search Engine
 
-Sistem ini memadukan **Pencarian Leksikal (Okapi BM25)** dan **Pencarian Semantik (Dense Retrieval)** secara hibrida (**Hybrid Scoring**) untuk menghasilkan perangkingan artikel yang sangat akurat secara klinis dan kebahasaan.
+**Cek Kesehatan dari Artikel**
 
----
+**Academic Project · Information Retrieval · Medical Search**
 
-## 👤 Profil Pengembang
+![Next.js](https://img.shields.io/badge/Next.js-Web_Application-000000?style=flat-square&logo=nextdotjs)
+![BM25](https://img.shields.io/badge/BM25-Lexical_Retrieval-2563EB?style=flat-square)
+![Semantic Search](https://img.shields.io/badge/Semantic_Search-Dense_Retrieval-7C3AED?style=flat-square)
+![Hugging Face](https://img.shields.io/badge/Hugging_Face-Embeddings-FFD21E?style=flat-square&logo=huggingface&logoColor=black)
 
-* **Nama Lengkap**: Zakaria Mujur Prasetyo  
-* **NIM**: 240411100144  
-* **Program Studi**: Teknik Informatika  
-* **Instansi**: Universitas Trunojoyo Madura  
-* **Kontak**: [zakariamujur6@gmail.com](mailto:zakariamujur6@gmail.com)  
-* **Website**: [zekktech.biz.id](https://zekktech.biz.id)  
-* **Repositori GitHub**: [cehati-web-search-engine](https://github.com/ZekkCode/cehati-web-search-engine.git)  
+</div>
 
----
+## Ringkasan
 
-## 🛠️ Metodologi Penilaian & Pencarian (Hybrid Scoring)
+**CEHATI** adalah aplikasi temu kembali informasi berbasis web untuk membantu pengguna mencari artikel kesehatan berbahasa Indonesia. Sistem menggabungkan pencarian leksikal menggunakan **Okapi BM25** dan pencarian semantik menggunakan **sentence embeddings**.
 
-CEHATI menerapkan formula penataan skor hibrida (**Hybrid Reranking**) yang menggabungkan kekuatan pencocokan kata kunci presisi dan pemahaman konteks semantik:
+Project ini dikembangkan sebagai tugas akhir Mata Kuliah **Temu Kembali Informasi** pada Program Studi Teknik Informatika, Universitas Trunojoyo Madura.
 
-$$\text{Hybrid Score} = w_{\text{BM25}} \times \text{Normalize}(\text{Score}_{\text{BM25}}) + w_{\text{Dense}} \times \text{Normalize}(\text{Score}_{\text{Dense}})$$
+> CEHATI is an academic medical information retrieval project that combines BM25 and semantic search to rank Indonesian health articles more contextually.
 
-Dengan pembobotan default:
-* **Bobot BM25 ($w_{\text{BM25}}$)**: `0.4`
-* **Bobot Dense ($w_{\text{Dense}}$)**: `0.6` (diberi porsi lebih besar karena pencarian medis diuntungkan oleh pemahaman sinonim awam/medis).
+## Permasalahan yang Diangkat
 
-### 1. Skor Leksikal BM25 (Inverted Index)
-* **Kalkulasi**: Okapi BM25 dengan parameter UAS yang terkalibrasi secara ketat:
-  * $k_1 = 1.2$ (Saturasi frekuensi istilah)
-  * $b = 0.75$ (Penalti panjang dokumen)
-* **Pra-pemrosesan Teks**: Menggunakan stemming Bahasa Indonesia Sastrawi pada tahap indeksasi.
-* **Partial Prefix Match**: Mendukung pencocokan parsial tingkat lanjut pada kueri yang tidak di-stem secara lokal dengan validasi panjang kueri minimum $\ge 3$ huruf (`qTerm.length >= 3 && dt.startsWith(qTerm)`) untuk mencegah kecocokan salah pada token yang terlalu pendek (seperti kata `"penyakit"` secara keliru mencocokkan kata medis `"pen"` / pen bedah tulang).
+Pencarian berbasis kata kunci sering gagal menemukan artikel yang relevan ketika pengguna memakai istilah awam, singkatan, atau kata yang berbeda dari istilah medis pada dokumen. CEHATI mencoba mengurangi masalah tersebut dengan menggabungkan dua pendekatan:
 
-### 2. Kemiripan Dense Semantik (Sentence Embeddings)
-* **Model Representasi**: Vektor embedding 384-dimensi menggunakan model Transformer multibahasa Hugging Face: `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`.
-* **Kalkulasi Kemiripan**: *Cosine Similarity* (dihitung secara dot product karena vektor embeddings dokumen telah dinormalisasi L2).
-* **Adblock-Proof Proxy**: Request embedding query dilewatkan melalui Server-Side API Route Next.js (`/api/encode`) untuk mencegah pemblokiran dari ekstensi browser/adblocker yang membatasi panggilan client langsung ke API Hugging Face.
+- **BM25** untuk pencocokan kata kunci yang presisi.
+- **Dense retrieval** untuk memahami kemiripan konteks dan makna.
+- **Hybrid scoring** untuk menyatukan hasil kedua metode dalam satu peringkat.
 
----
+## Kontribusi Saya
 
-## 📂 Dataset Medis Terpercaya
-Dataset yang digunakan berisi artikel kesehatan berlisensi dan tervalidasi yang diindeks dari berbagai rumah sakit dan portal kesehatan terkemuka di Indonesia:
-* Ayo Sehat Kemenkes
-* Halodoc
-* Bio Farma
-* Siloam Hospitals
-* RS Marzoeki Mahdi Bogor
-* RS Universitas Indonesia
+- Merancang alur pencarian dan pengalaman pengguna.
+- Mengimplementasikan indexing serta retrieval berbasis BM25.
+- Mengintegrasikan sentence embeddings untuk pencarian semantik.
+- Menyusun hybrid scoring dan tampilan skor relevansi.
+- Mengembangkan antarmuka pencarian, hasil, detail artikel, serta halaman metodologi.
+- Menyiapkan dokumentasi teknis dan deployment aplikasi.
 
-> [!NOTE]
-> **Kriteria Panjang Teks**: Sesuai dengan instruksi UAS, dataset ini memuat teks artikel panjang (judul + konten penuh) dengan **panjang rata-rata di atas 900 kata** per dokumen untuk menjamin evaluasi similarity berbasis vektor yang bermakna.
+## Fitur Utama
 
----
+- Pencarian artikel kesehatan berbahasa Indonesia.
+- Pilihan metode retrieval BM25, Dense, dan Hybrid.
+- Persentase kecocokan serta skor relevansi pada hasil pencarian.
+- Filter artikel berdasarkan sumber.
+- Halaman detail artikel dengan metadata dan konten lengkap.
+- Ringkasan metodologi serta arsitektur sistem.
+- Antarmuka responsif untuk desktop dan perangkat seluler.
 
-## 💻 Panduan Instalasi & Penggunaan Lokal
+## Teknologi
 
-### Prasyarat (Prerequisites)
-Pastikan komputer Anda sudah terinstal:
-* [Node.js](https://nodejs.org/) (versi 18.x atau lebih baru)
-* npm (biasanya terinstal bersama Node.js)
+| Bagian | Teknologi |
+|---|---|
+| Web Framework | Next.js |
+| Lexical Retrieval | Okapi BM25 |
+| Text Processing | Sastrawi |
+| Semantic Retrieval | Sentence Transformers |
+| Embedding Model | `paraphrase-multilingual-MiniLM-L12-v2` |
+| Similarity | Cosine Similarity |
+| Model Service | Hugging Face API |
+| Deployment | Vercel |
 
-### Langkah Langkah Instalasi
+## Metode Hybrid Retrieval
 
-1. **Clone Repositori**:
-   ```bash
-   git clone https://github.com/ZekkCode/cehati-web-search-engine.git
-   cd cehati-web-search-engine
-   ```
+CEHATI menggabungkan skor BM25 dan dense retrieval setelah kedua skor dinormalisasi.
 
-2. **Instal Dependensi**:
-   ```bash
-   npm install
-   ```
+```text
+Hybrid Score = 0.4 × Normalized BM25 Score
+             + 0.6 × Normalized Dense Score
+```
 
-3. **Jalankan Mode Pengembangan (Local Dev)**:
-   ```bash
-   npm run dev
-   ```
-   Buka peramban Anda dan akses [http://localhost:3000](http://localhost:3000).
+Bobot dense retrieval dibuat lebih besar untuk membantu pencarian yang memakai sinonim atau istilah awam. Nilai tersebut merupakan konfigurasi eksperimen project dan dapat disesuaikan kembali untuk evaluasi lanjutan.
 
-4. **Kompilasi Produksi (Build & Start)**:
-   ```bash
-   npm run build
-   ```
-   Setelah kompilasi selesai dengan sukses, jalankan server produksi lokal:
-   ```bash
-   npm run start
-   ```
+### Lexical Retrieval
 
----
+- Algoritma: Okapi BM25.
+- Parameter: `k1 = 1.2` dan `b = 0.75`.
+- Preprocessing: stemming Bahasa Indonesia menggunakan Sastrawi.
+- Prefix matching hanya diterapkan pada kueri dengan panjang minimum tertentu untuk mengurangi pencocokan token yang terlalu pendek.
 
-## 🚀 Panduan Deployment ke Vercel
+### Semantic Retrieval
 
-Aplikasi Next.js CEHATI telah diuji kompilasinya dan 100% kompatibel dengan infrastruktur Vercel.
+- Model: `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`.
+- Dimensi embedding: 384.
+- Perhitungan kemiripan: cosine similarity.
+- Query embedding diproses melalui server-side API route Next.js.
 
-1. **Push Proyek ke GitHub**:
-   Pastikan Anda telah mengunggah semua berkas proyek ke repositori GitHub Anda.
-2. **Impor Proyek**:
-   * Masuk ke dashboard [Vercel](https://vercel.com).
-   * Klik **"Add New"** > **"Project"** dan pilih repositori `cehati-web-search-engine`.
-3. **Konfigurasi Environment Variables (Opsional)**:
-   Untuk mencegah limitasi rate pencarian dari API publik Hugging Face:
-   * Buka tab **Environment Variables** di layar setup Vercel.
-   * Tambahkan key `HF_API_KEY` dan masukkan token API Hugging Face Anda.
-4. **Klik "Deploy"**:
-   Tunggu hingga Vercel menyelesaikan kompilasi statik dan dinamis. Aplikasi web Anda langsung siap digunakan!
+## Dataset Artikel
 
----
+Dataset project mengindeks artikel dari sejumlah sumber kesehatan Indonesia, antara lain:
 
-## 📜 Medical Disclaimer (Penafian Medis)
-Informasi hasil pencarian di dalam CEHATI murni ditujukan untuk tujuan simulasi sistem temu kembali informasi akademik. Hasil pencarian tidak boleh digunakan sebagai pengganti diagnosis medis, terapi medis, atau saran profesional dari dokter. Harap berkonsultasi dengan dokter atau rumah sakit terdekat untuk masalah kesehatan nyata Anda.
+- Ayo Sehat Kementerian Kesehatan
+- Halodoc
+- Bio Farma
+- Siloam Hospitals
+- RS Marzoeki Mahdi Bogor
+- RS Universitas Indonesia
 
----
+Sumber asli tetap dicantumkan pada halaman detail artikel. Dataset digunakan untuk simulasi dan evaluasi sistem temu kembali informasi dalam konteks akademik.
 
-## 📸 Dokumentasi Antarmuka (Screenshots)
+## Dokumentasi Antarmuka
 
-Berikut adalah beberapa tangkapan layar dari tampilan antarmuka sistem mesin pencari CEHATI yang diakses secara lokal:
+### Halaman Utama
 
-### 1. Halaman Beranda (Homepage)
-Menampilkan kolom pencarian hibrida, topik populer, statistik database, dan ringkasan teknologi pencarian.
-![Beranda](public/screenshots/homepage.png)
+![CEHATI Homepage](public/screenshots/homepage.png)
 
-### 2. Halaman Hasil Pencarian (Search Results)
-Menampilkan daftar artikel kesehatan yang relevan, persentase kecocokan (% Match), skor relevansi desimal, label metode retrieval yang aktif (BM25/Dense/Hybrid), dan filter dinamis berdasarkan sumber artikel.
-![Hasil Pencarian](public/screenshots/media__1780771907309.png)
+### Hasil Pencarian
 
-### 3. Halaman Detail Artikel (Article Detail)
-Menampilkan judul artikel lengkap, metadata artikel (sumber penerbit, tanggal rilis, penulis, jumlah kata), kotak ringkasan klinis, konten artikel lengkap, tag topik terkait, serta tombol rujukan untuk membaca artikel asli pada situs penerbit asal.
-![Detail Artikel](public/screenshots/media__1780772420722.png)
+![CEHATI Search Results](public/screenshots/media__1780771907309.png)
 
-### 4. Halaman Tentang (About)
-Menampilkan informasi mendalam mengenai arsitektur sistem berbasis MVC, diagram alur retrieval indeksasi data, parameter metodologi penilaian (BM25 dan Dense), serta profil lengkap pengembang sistem.
-![Halaman Tentang](public/screenshots/media__1780770745414.png)
+### Detail Artikel
 
-### 5. Halaman Kontak Pengembang (Contact)
-Menampilkan profil lengkap pengembang, NIM mahasiswa, instansi Universitas Trunojoyo Madura, serta tautan pintas ke media sosial dan portofolio resmi pengembang.
-![Halaman Kontak](public/screenshots/media__1780771585791.png)
+![CEHATI Article Detail](public/screenshots/media__1780772420722.png)
 
+### Metodologi dan Arsitektur
+
+![CEHATI About Page](public/screenshots/media__1780770745414.png)
+
+## Menjalankan Project
+
+### Prasyarat
+
+- Node.js 18 atau versi lebih baru.
+- npm.
+
+### Instalasi
+
+```bash
+git clone https://github.com/ZekkCode/cehati-web-search-engine.git
+cd cehati-web-search-engine
+npm install
+npm run dev
+```
+
+Buka aplikasi melalui:
+
+```text
+http://localhost:3000
+```
+
+### Production Build
+
+```bash
+npm run build
+npm run start
+```
+
+## Environment Variable
+
+Token Hugging Face bersifat opsional, tetapi disarankan untuk mengurangi keterbatasan pemakaian API publik.
+
+```env
+HF_API_KEY=your_hugging_face_token
+```
+
+Jangan menyimpan token asli di dalam repository.
+
+## Konteks Akademik
+
+- **Mata Kuliah:** Temu Kembali Informasi
+- **Program Studi:** Teknik Informatika
+- **Universitas:** Universitas Trunojoyo Madura
+- **Pengembang:** Zakaria Mujur Prasetyo
+
+## Medical Disclaimer
+
+CEHATI merupakan simulasi sistem temu kembali informasi untuk kebutuhan akademik. Informasi yang ditampilkan tidak boleh digunakan sebagai pengganti diagnosis, terapi, atau saran dari tenaga medis profesional.
